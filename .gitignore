@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# native builds
+/ios
+/android
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# logs
+*.log
+
+# environment
+.env
+.env*
+!.env.example
+
+# Supabase CLI
+supabase/.branches
+supabase/.temp
+
+# macOS
+.DS_Store
+*.pem
+
+# editors
+.idea/
+.vscode/
