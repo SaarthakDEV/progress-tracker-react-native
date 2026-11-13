@@ -3,19 +3,36 @@ import {
   ActivityIndicator,
   BackHandler,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import RepDropdown from "../../components/RepDropdown";
 import WeightDropdown from "../../components/WeightDropdown";
+import WeightProgressChart from "../../components/WeightProgressChart";
+import {
+  SAMPLE_PROGRESS_SERIES,
+  SAMPLE_PROGRESS_UNIT,
+  USE_SAMPLE_PROGRESS,
+} from "../../constants/sampleProgress";
+import { useExerciseHistory } from "../../hooks/useExerciseHistory";
 import { useExerciseProgress } from "../../hooks/useExerciseProgress";
 
 const ExerciseDetailPage = ({ exercise, onBack }) => {
   const { progress, loading, error, saveProgress } = useExerciseProgress(
     exercise.id,
   );
-  console.log(typeof progress);
+  const {
+    series,
+    unit,
+    loading: historyLoading,
+    error: historyError,
+  } = useExerciseHistory(exercise.id);
+  const showingSampleData =
+    __DEV__ && USE_SAMPLE_PROGRESS && series.length === 0;
+  const chartSeries = showingSampleData ? SAMPLE_PROGRESS_SERIES : series;
+  const chartUnit = showingSampleData ? SAMPLE_PROGRESS_UNIT : unit;
   const [selectedWeights, setSelectedWeights] = useState([]);
   const [selectedReps, setSelectedReps] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -107,7 +124,7 @@ const ExerciseDetailPage = ({ exercise, onBack }) => {
   }, [handleBack]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
       <Pressable
         accessibilityRole="button"
         onPress={handleBack}
@@ -165,15 +182,42 @@ const ExerciseDetailPage = ({ exercise, onBack }) => {
           </View>
         )}
       </View>
-    </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>
+          Weight Progress ({chartUnit})
+        </Text>
+
+        {historyLoading ? (
+          <ActivityIndicator />
+        ) : historyError ? (
+          <Text style={styles.error}>{historyError}</Text>
+        ) : (
+          <>
+            <WeightProgressChart series={chartSeries} />
+            {chartSeries.length > 0 ? (
+              <Text style={styles.chartNote}>
+                {showingSampleData
+                  ? "Showing local sample data for debugging. "
+                  : ""}
+                Up to 10 latest updates per set.
+              </Text>
+            ) : null}
+          </>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
+  },
+  container: {
     padding: 16,
     paddingTop: 64,
+    paddingBottom: 32,
   },
   backButton: {
     alignSelf: "flex-start",
@@ -220,6 +264,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "#b00020",
+  },
+  chartNote: {
+    marginTop: 8,
+    fontSize: 12,
+    color: "#666",
   },
   setList: {
     borderWidth: 1,
