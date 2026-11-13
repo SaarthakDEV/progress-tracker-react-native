@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "start": "EXPO_UNSTABLE_MCP_SERVER=1 expo start",
+    "android": "EXPO_UNSTABLE_MCP_SERVER=1 expo start --android",
+    "ios": "EXPO_UNSTABLE_MCP_SERVER=1 expo start --ios",
+    "web": "EXPO_UNSTABLE_MCP_SERVER=1 expo start --web"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -15,12 +15,17 @@
     "@supabase/supabase-js": "^2.118.0",
     "expo": "~54.0.36",
     "expo-status-bar": "~3.0.9",
+    "lodash": "^4.18.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-url-polyfill": "^4.0.0",
-    "react-native-web": "^0.21.0"
+    "react-native-web": "^0.21.0",
+    "zustand": "^5.1.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "expo-mcp": "~0.2.1"
+  }
 }
