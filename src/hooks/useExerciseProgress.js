@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { SET_COUNT } from "../constants/sets";
 import { supabase } from "../lib/supabase";
-
-const SET_COUNT = 5;
 
 export const useExerciseProgress = (exerciseId) => {
   const [progress, setProgress] = useState([]);
