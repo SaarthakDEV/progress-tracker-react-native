@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
+import PlatesDropdown from "../../components/PlatesDropdown";
 import RepDropdown from "../../components/RepDropdown";
 import WeightDropdown from "../../components/WeightDropdown";
 import { useExerciseProgress } from "../../hooks/useExerciseProgress";
@@ -20,6 +21,8 @@ const ExerciseDetailPage = ({ exercise, onBack }) => {
   const [selectedReps, setSelectedReps] = useState([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const isMachine =
+    String(exercise.equipment ?? "").toLowerCase() === "machine";
 
   useEffect(() => {
     setSelectedWeights(
@@ -53,15 +56,20 @@ const ExerciseDetailPage = ({ exercise, onBack }) => {
         const weight = selectedWeights[index] ?? null;
         const storedReps = set?.reps ?? null;
         const storedWeight = set?.weight != null ? Number(set.weight) : null;
+        const storedUnit = set?.weight_unit ?? "kg";
+        const weightUnit = isMachine ? "plates" : storedUnit;
+        const unitChanged = weight != null && weightUnit !== storedUnit;
 
-        if (reps === storedReps && weight === storedWeight) return null;
+        if (reps === storedReps && weight === storedWeight && !unitChanged) {
+          return null;
+        }
 
         return {
           exercise_id: exercise.id,
           set_number: index + 1,
           reps: reps ?? storedReps ?? 0,
           weight: weight ?? storedWeight ?? null,
-          weight_unit: set?.weight_unit ?? "kg",
+          weight_unit: weightUnit,
         };
       })
       .filter(Boolean);
@@ -86,6 +94,7 @@ const ExerciseDetailPage = ({ exercise, onBack }) => {
     onBack();
   }, [
     exercise.id,
+    isMachine,
     onBack,
     progress,
     saveProgress,
@@ -154,11 +163,18 @@ const ExerciseDetailPage = ({ exercise, onBack }) => {
                     value={selectedReps[index] ?? null}
                     onChange={(reps) => handleRepChange(index, reps)}
                   />
-                  <WeightDropdown
-                    value={selectedWeights[index] ?? null}
-                    unit={set?.weight_unit ?? "kg"}
-                    onChange={(weight) => handleWeightChange(index, weight)}
-                  />
+                  {isMachine ? (
+                    <PlatesDropdown
+                      value={selectedWeights[index] ?? null}
+                      onChange={(weight) => handleWeightChange(index, weight)}
+                    />
+                  ) : (
+                    <WeightDropdown
+                      value={selectedWeights[index] ?? null}
+                      unit={set?.weight_unit ?? "kg"}
+                      onChange={(weight) => handleWeightChange(index, weight)}
+                    />
+                  )}
                 </View>
               </View>
             ))}
